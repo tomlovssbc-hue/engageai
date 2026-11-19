@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#10131d">
+<title>EngageAI</title>
+<link rel="manifest" href="manifest.webmanifest">
+<style>
+:root{color-scheme:dark;--bg:#10131d;--panel:#191f2d;--panel2:#20283a;--line:#30394d;--text:#f3f5fb;--muted:#a6b0c4;--accent:#9b8cff;--good:#6bd6ad}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(160deg,#171a2b 0%,var(--bg) 45%);color:var(--text);font:15px system-ui,-apple-system,Segoe UI,sans-serif;min-height:100vh}
+header{padding:24px 18px 14px;max-width:850px;margin:auto}h1{font-size:27px;margin:0;letter-spacing:-.7px}header p{color:var(--muted);margin:6px 0 0}
+main{max-width:850px;margin:auto;padding:8px 16px 48px}.notice{background:#29253c;border:1px solid #51466f;border-radius:14px;padding:12px 14px;color:#ded8ff;font-size:13px;line-height:1.45;margin-bottom:16px}
+nav{display:flex;gap:8px;overflow:auto;margin:0 0 16px}nav button,.btn{border:1px solid var(--line);background:var(--panel2);color:var(--text);border-radius:11px;padding:10px 13px;font-weight:600;cursor:pointer}nav button.active,.primary{background:var(--accent);color:#151326;border-color:var(--accent)}
+.panel{background:rgba(25,31,45,.94);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:14px}
+h2{font-size:17px;margin:0 0 13px}label{display:block;color:var(--muted);font-size:12px;font-weight:650;margin:11px 0 6px}
+input,select,textarea{width:100%;background:#111725;border:1px solid var(--line);border-radius:10px;padding:12px;color:var(--text);font:inherit;outline:none}textarea{min-height:76px;resize:vertical}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.actions button{flex:1;min-width:110px}
+.small{font-size:12px;color:var(--muted)}.item{border:1px solid var(--line);background:#151c29;border-radius:13px;padding:13px;margin:9px 0}
+.itemtop{display:flex;justify-content:space-between;gap:10px;align-items:center}.pill{font-size:11px;color:#d9d2ff;background:#322e4e;padding:4px 8px;border-radius:20px}
+.item h3{font-size:15px;margin:9px 0 4px}.item p{color:var(--muted);font-size:13px;margin:4px 0;overflow-wrap:anywhere}
+.item .actions button{font-size:12px;padding:8px}.empty{text-align:center;color:var(--muted);padding:26px 10px}
+.hidden{display:none!important}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}.stat{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px}.stat b{display:block;font-size:21px}.stat span{color:var(--muted);font-size:11px}
+footer{text-align:center;color:var(--muted);font-size:11px;padding:14px}
+@media(max-width:520px){.grid{grid-template-columns:1fr}.stats{grid-template-columns:repeat(3,1fr)}}
+</style>
+</head>
+<body>
+<header><h1>✦ EngageAI</h1><p>Your cross-platform engagement workspace</p></header>
+<main>
+<div class="notice"><b>Responsible-use mode:</b> This version helps you find, organize and draft engagement. It does not auto-like, auto-comment, scrape feeds or simulate taps. Those actions can violate platform rules and put accounts at risk. You stay in control of posting.</div>
+<nav>
+<button class="active" data-tab="queue">My queue</button><button data-tab="add">Add a video</button><button data-tab="settings">Comment studio</button>
+</nav>
+<section id="queue">
+<div class="stats"><div class="stat"><b id="total">0</b><span>Saved videos</span></div><div class="stat"><b id="todo">0</b><span>To engage</span></div><div class="stat"><b id="done">0</b><span>Completed</span></div></div>
+<div class="panel"><div class="itemtop"><h2 style="margin:0">Saved videos</h2><select id="filter" style="width:auto;padding:8px"><option value="all">All platforms</option><option>TikTok</option><option>Instagram</option><option>YouTube</option></select></div><div id="list"></div></div>
+</section>
+<section id="add" class="hidden">
+<div class="panel"><h2>Save a video to your queue</h2>
+<label>Video URL</label><input id="url" type="url" placeholder="https://www.tiktok.com/...">
+<div class="grid"><div><label>Platform</label><select id="platform"><option>TikTok</option><option>Instagram</option><option>YouTube</option></select></div><div><label>Creator (optional)</label><input id="creator" placeholder="@creator"></div></div>
+<label>What is the video about?</label><input id="topic" placeholder="e.g. guitar riff, local band, funny dog">
+<label>Your note (optional)</label><textarea id="note" placeholder="Why is this relevant? What could you respond to?"></textarea>
+<div class="actions"><button class="primary" id="save">Save to queue</button></div>
+<p class="small">Tip: paste a public video link you found in the platform's app. This app does not fetch or scrape the video.</p>
+</div></section>
+<section id="settings" class="hidden">
+<div class="panel"><h2>Comment studio</h2>
+<label>Video topic / context</label><textarea id="context" placeholder="Describe what happens in the video or paste your notes..."></textarea>
+<div class="grid"><div><label>Voice</label><select id="tone"><option value="casual">Casual and genuine</option><option value="funny">Lightly funny</option><option value="supportive">Supportive</option><option value="music">Music-focused</option><option value="curious">Curious / conversational</option></select></div><div><label>Length</label><select id="length"><option value="short">Short</option><option value="medium">A little more detail</option></select></div></div>
+<div class="actions"><button class="primary" id="generate">Generate comment ideas</button></div>
+<div id="suggestions"></div>
+<p class="small">Suggestions are generated on-device from simple templates; no paid AI service or API key is required.</p>
+</div>
+<div class="panel"><h2>Platform shortcuts</h2><p class="small">Open the apps or websites to browse and take actions yourself.</p><div class="actions"><button onclick="window.open('https://www.tiktok.com','_blank')">TikTok</button><button onclick="window.open('https://www.instagram.com','_blank')">Instagram</button><button onclick="window.open('https://www.youtube.com/shorts','_blank')">YouTube Shorts</button></div></div>
+</section>
+<footer>EngageAI · Your data stays on this device · v0.1</footer>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+let entries=JSON.parse(localStorage.getItem('engageai_entries')||'[]');
+function persist(){localStorage.setItem('engageai_entries',JSON.stringify(entries));render()}
+function esc(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function render(){
+ const f=$('filter').value;const shown=entries.filter(x=>f==='all'||x.platform===f);
+ $('total').textContent=entries.length;$('todo').textContent=entries.filter(x=>!x.liked&&!x.commented).length;$('done').textContent=entries.filter(x=>x.liked||x.commented).length;
+ $('list').innerHTML=shown.length?shown.map(x=>`<article class="item"><div class="itemtop"><span class="pill">${esc(x.platform)}</span><span class="small">${x.liked?'♥ Liked':''} ${x.commented?' · Commented':''}</span></div><h3>${esc(x.topic||'Saved video')}</h3><p>${esc(x.creator||'')} ${x.note?'· '+esc(x.note):''}</p><div class="actions"><button onclick="openVideo('${x.id}')">Open video</button><button onclick="toggleFlag('${x.id}','liked')">${x.liked?'Undo like':'Mark liked'}</button><button onclick="toggleFlag('${x.id}','commented')">${x.commented?'Undo comment':'Mark commented'}</button><button onclick="removeEntry('${x.id}')">Delete</button></div></article>`).join(''):'<div class="empty">Nothing here yet. Add a video to get started.</div>';
+}
+window.openVideo=id=>{const x=entries.find(e=>e.id===id);if(x?.url)window.open(x.url,'_blank','noopener')};
+window.toggleFlag=(id,k)=>{const x=entries.find(e=>e.id===id);if(x){x[k]=!x[k];persist()}};
+window.removeEntry=id=>{entries=entries.filter(e=>e.id!==id);persist()};
+$('save').onclick=()=>{const url=$('url').value.trim();if(!url){alert('Add a video URL first.');return}try{const u=new URL(url);if(!['http:','https:'].includes(u.protocol))throw 0}catch{alert('Please enter a valid http or https video URL.');return}
+entries.unshift({id:Date.now().toString(),url,platform:$('platform').value,creator:$('creator').value.trim(),topic:$('topic').value.trim(),note:$('note').value.trim(),liked:false,commented:false});['url','creator','topic','note'].forEach(id=>$(id).value='');persist();showTab('queue')};
+$('filter').onchange=render;
+function showTab(tab){document.querySelectorAll('main>section').forEach(s=>s.classList.toggle('hidden',s.id!==tab));document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab))}
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>showTab(b.dataset.tab));
+$('generate').onclick=()=>{
+ const c=$('context').value.trim();if(!c){alert('Add a little context first.');return}
+ const tone=$('tone').value, long=$('length').value==='medium';
+ const sets={
+ casual:[`This is such a good take on ${c}.`,`Really enjoyed this — the detail about ${c} stood out.`,`Love seeing content like this. ${c} is underrated.`],
+ funny:[`Well, I wasn't expecting ${c} to be this entertaining 😂`,`The ${c} part got me. Didn't see that coming.`,`I came for a quick scroll and got invested in ${c}.`],
+ supportive:[`Appreciate you sharing this. ${c} deserves more attention.`,`You can tell a lot of thought went into this. Great work!`,`Keep making stuff like this — really enjoyed the ${c} angle.`],
+ music:[`That ${c} sound is seriously satisfying.`,`Love the energy here. The ${c} detail really works.`,`As a music fan, this is right up my alley. Nice work!`],
+ curious:[`How did you get into ${c}?`,`What's the story behind this ${c}? I'd love to hear more.`,`Have you tried taking the ${c} idea even further?`]
+ };
+ const arr=sets[tone].map(s=>long?s+' What inspired you to make it?':s);
+ $('suggestions').innerHTML='<label>Comment ideas — edit before posting</label>'+arr.map(s=>`<div class="item"><p>${esc(s)}</p><button onclick="copyText(this)">Copy comment</button></div>`).join('');
+};
+window.copyText=btn=>{const t=btn.parentElement.querySelector('p').textContent;navigator.clipboard?.writeText(t).then(()=>btn.textContent='Copied!').catch(()=>{btn.textContent='Select and copy'});};
+if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+render();
+</script>
+</body></html>
